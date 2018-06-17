@@ -1,0 +1,5 @@
+
+### 2018-06-15:
+
+Renamed the `repository` metric.cool -> metric-dot-cool
+see: https://github.com/elm-lang/elm-make/issues/106
