@@ -14,7 +14,12 @@ regenerate_reactor_custom_html:
 	sed -i '' -e  's/index.js/\/_compile\/frontend\/Main.elm/g' reactor.html
 
 configure_s3:
-	aws configure --profile metric.cool.deployer
+	aws configure --profile $DEPLOY_PROFILE
+
+# aws s3 sync _site s3://metric.cool/ --region us-east-1 --profile metric.cool.deployer
 
 deploy:
-	aws s3 sync _site s3://metric.cool/ --region us-east-1 --profile metric.cool.deployer
+	aws s3 sync _site "${S3_BUCKET_NAME}" --region "${S3_REGION}"  --profile "${S3_DEPLOY_PROFILE}"
+
+invalidate_cache:
+	aws cloudfront create-invalidation --distribution-id "${CDN_DISTRIBUTION_ID}" --paths "/*"	--profile "${S3_DEPLOY_PROFILE}"
