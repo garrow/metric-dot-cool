@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Temperature exposing (..)
+import Round
 
 
 -- Main
@@ -49,6 +50,7 @@ update msg model =
 
 type alias Model =
     { rawInput : String
+    , numericInput : Float
     , currentValue : Temperature
     }
 
@@ -60,6 +62,7 @@ initialModel =
             26
     in
     { rawInput = toString <| initialInput
+    , numericInput = initialInput
     , currentValue = celsius initialInput
     }
 
@@ -91,6 +94,7 @@ mainpanel model =
             , fahrenheitButton model
             ]
         , temperatureOutputs model.currentValue
+        , matrixDisplay model
         ]
 
 
@@ -104,8 +108,8 @@ temperatureOutputs temperature =
             toCelsius temperature
     in
     div []
-        [ p [] [ text <| print <| inC ]
-        , p [] [ text <| print <| inF ]
+        [ p [] [ text <| printFull <| inC ]
+        , p [] [ text <| printFull <| inF ]
         ]
 
 
@@ -142,3 +146,66 @@ valueDisplay name inputValue =
         [ p [] [ text name ]
         , input [ type_ "number", onInput SetInputValue, value inputValue ] []
         ]
+
+
+
+
+matrixDisplay : Model -> Html Msg
+matrixDisplay model =
+    let
+        asC =
+            temperature model.numericInput Celsius
+
+        casF =
+            toFahrenheit asC
+
+        asF =
+            temperature model.numericInput Fahrenheit
+
+        fasC =
+            toCelsius asF
+
+        thAttrs =
+            [ class "" ]
+    in
+    div []
+        [ table [ class "output_matrix" ]
+            [ thead [] []
+            , tbody []
+                [ tr []
+                    [ th thAttrs [ text <| printNice asC ]
+                    , td [] [ text <| printNice casF ]
+                    ]
+                , tr []
+                    [ th thAttrs [ text <| printNice asF ]
+                    , td [] [ text <| printNice fasC ]
+                    ]
+                ]
+            ]
+        ]
+
+
+--- Util
+
+printNice : Temperature -> String
+printNice ( degrees, scale ) =
+    let
+        symbol =
+            String.left 1 <| scaleName scale
+
+        roundedDegrees =
+            Round.round 2 degrees
+    in
+    symbol ++ " " ++ roundedDegrees
+
+
+printFull : Temperature -> String
+printFull ( degrees, scale ) =
+    let
+        name =
+            scaleName scale
+
+        roundedDegrees =
+            Round.round 2 degrees
+    in
+    name ++ " " ++ roundedDegrees

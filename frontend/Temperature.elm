@@ -59,11 +59,6 @@ temperatureT d s =
     ( d, s )
 
 
-fourC : Temperature
-fourC =
-    temperature 4 Celsius
-
-
 print : Temperature -> String
 print ( degrees, scale ) =
     toString scale ++ " " ++ toString degrees
@@ -83,6 +78,23 @@ toSymbol scale =
 
         Rankine ->
             "°R"
+
+
+scaleName : Scale -> String
+scaleName scale =
+    case scale of
+        Celsius ->
+            "Celsius"
+
+        Kelvin ->
+            "Kelvin"
+
+        Fahrenheit ->
+            "Fahrenheit"
+
+        Rankine ->
+            "Rankine"
+
 
 
 converterFor : Scale -> (Temperature -> Temperature)
