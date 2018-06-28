@@ -3,8 +3,8 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Temperature exposing (..)
 import Round
+import Temperature exposing (..)
 
 
 -- Main
@@ -28,13 +28,13 @@ update msg model =
     case msg of
         SetInputValue rawInputString ->
             let
-                parsedValue =
+                parsedInput =
                     Result.withDefault (degreesOf model.currentValue) (String.toFloat rawInputString)
 
                 newValue =
-                    temperature parsedValue (scaleOf model.currentValue)
+                    temperature parsedInput (scaleOf model.currentValue)
             in
-            { model | currentValue = newValue, rawInput = rawInputString }
+            { model | currentValue = newValue, rawInput = rawInputString, numericInput = parsedInput }
 
         SetInputScale scale ->
             let
@@ -148,8 +148,6 @@ valueDisplay name inputValue =
         ]
 
 
-
-
 matrixDisplay : Model -> Html Msg
 matrixDisplay model =
     let
@@ -185,7 +183,9 @@ matrixDisplay model =
         ]
 
 
+
 --- Util
+
 
 printNice : Temperature -> String
 printNice ( degrees, scale ) =
