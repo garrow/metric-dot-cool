@@ -1,10 +1,10 @@
-TEMPLATE_HTML:=static/*.html
+TEMPLATE_FILES:=static/*.*
 
 build: regenerate_reactor_custom_html
 	echo "CLEAN"
 	rm _site/* || echo "Nothing to delete"
 	echo "COPY TEMPLATES"
-	cp  $(TEMPLATE_HTML) _site
+	cp  $(TEMPLATE_FILES) _site
 	echo "BUILD"
 	elm-make frontend/Main.elm --output _site/index.js
 	node --check _site/index.js

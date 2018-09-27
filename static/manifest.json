@@ -1,0 +1,16 @@
+{
+  "short_name": "Metric.cool",
+  "name": "Metric.cool",
+  "icons": [
+    {
+      "src": "/metric-dot-cool-square.png",
+      "type": "image/png",
+      "sizes": "576x576"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#3367D6",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#3367D6"
+}
