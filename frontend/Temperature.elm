@@ -1,4 +1,4 @@
-module Temperature exposing (..)
+module Temperature exposing (Degrees, Scale(..), Temperature, celsius, convert, converterFor, degreesOf, fahrenheit, kelvin, rankine, scaleName, scaleOf, temperature, temperatureT, toCelsius, toFahrenheit, toKelvin, toRankine, toSymbol)
 
 import TemperatureConstants exposing (..)
 import Tuple exposing (first, second)
@@ -18,10 +18,9 @@ type alias Degrees =
 type alias Temperature =
     ( Degrees, Scale )
 
-
 temperature : Degrees -> Scale -> Temperature
 temperature =
-    (,)
+    \a b -> ( a, b )
 
 
 scaleOf : Temperature -> Scale
@@ -59,9 +58,9 @@ temperatureT d s =
     ( d, s )
 
 
-print : Temperature -> String
-print ( degrees, scale ) =
-    toString scale ++ " " ++ toString degrees
+--print : Temperature -> String
+--print ( degrees, scale ) =
+--    toString scale ++ " " ++ toString degrees
 
 
 toSymbol : Scale -> String
@@ -94,7 +93,6 @@ scaleName scale =
 
         Rankine ->
             "Rankine"
-
 
 
 converterFor : Scale -> (Temperature -> Temperature)
@@ -180,4 +178,3 @@ toFahrenheit ( degrees, scale ) =
 
         Kelvin ->
             fahrenheit <| (degrees + kelvinFahrenheitDifference) * fromFahrenheitRational
-

@@ -123,7 +123,9 @@
   }
 </script>
 <script>
-  Elm.Main.embed(document.getElementById("metric-cool-app"));
+  var app = Elm.Main.init({
+    node: document.getElementById("metric-cool-app")
+  });
 </script>
 </body>
 </html>

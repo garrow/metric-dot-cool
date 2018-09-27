@@ -6,7 +6,7 @@ build: regenerate_reactor_custom_html
 	echo "COPY TEMPLATES"
 	cp  $(TEMPLATE_FILES) _site
 	echo "BUILD"
-	elm-make frontend/Main.elm --output _site/index.js
+	elm make frontend/Main.elm --output _site/index.js
 	node --check _site/index.js
 	terminal-notifier -message "Build Complete $(date "+%H:%M:%S")" -title "Metric.cool.build" -group cool.metric.build.local
 	sleep 1

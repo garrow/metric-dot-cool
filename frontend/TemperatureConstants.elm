@@ -1,4 +1,4 @@
-module TemperatureConstants exposing (..)
+module TemperatureConstants exposing (celsiusFahrenheitDifference, fromFahrenheitRational, kelvinCelsiusDifference, kelvinFahrenheitDifference, toFahrenheitRational)
 
 
 kelvinCelsiusDifference =
