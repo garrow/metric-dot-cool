@@ -1,5 +1,6 @@
-module Main exposing (..)
+module Main exposing (Model, Msg(..), celsiusButton, fahrenheitButton, header, initialModel, main, mainpanel, matrixDisplay, printFull, printNice, scaleButton, temperatureInput, temperatureOutputs, update, valueDisplay, view)
 
+import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -7,12 +8,13 @@ import Round
 import Temperature exposing (..)
 
 
+
 -- Main
 
 
 main =
-    Html.beginnerProgram
-        { model = initialModel
+    Browser.sandbox
+        { init = initialModel
         , view = view
         , update = update
         }
@@ -28,13 +30,15 @@ update msg model =
     case msg of
         SetInputValue rawInputString ->
             let
-                parsedInput =
-                    Result.withDefault (degreesOf model.currentValue) (String.toFloat rawInputString)
+                parsedInput = Result.fromMaybe ("Bad Input") (String.toFloat rawInputString)
+
+                safeInput =
+                    Result.withDefault (degreesOf model.currentValue) parsedInput
 
                 newValue =
-                    temperature parsedInput (scaleOf model.currentValue)
+                    temperature safeInput (scaleOf model.currentValue)
             in
-            { model | currentValue = newValue, rawInput = rawInputString, numericInput = parsedInput }
+            { model | currentValue = newValue, rawInput = rawInputString, numericInput = safeInput }
 
         SetInputScale scale ->
             let
@@ -61,7 +65,7 @@ initialModel =
         initialInput =
             26
     in
-    { rawInput = toString <| initialInput
+    { rawInput = String.fromInt <| initialInput
     , numericInput = initialInput
     , currentValue = celsius initialInput
     }
@@ -129,6 +133,7 @@ scaleButton scale label currentValue =
         classes =
             if scaleOf currentValue == scale then
                 "button active"
+
             else
                 "button"
     in
