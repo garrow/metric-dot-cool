@@ -112,7 +112,7 @@
 
 <script src="index.js"></script>
 <script>
-  if ('serviceWorker' in navigator) {
+  if (false && 'serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js', {scope: '/'})
       .then(function (registration) {
         // console.log('Service Worker Registered');

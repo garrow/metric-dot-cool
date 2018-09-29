@@ -1,14 +1,143 @@
-module Main exposing (Model, Msg(..), celsiusButton, fahrenheitButton, header, initialModel, main, mainpanel, matrixDisplay, printFull, printNice, scaleButton, temperatureInput, temperatureOutputs, update, valueDisplay, view)
+module Main exposing (main)
 
 import Browser exposing (Document, document)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Element exposing (Element, alignRight, centerY, column, el, fill, padding, rgb, rgb255, row, spacing, table, text, width)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
+import Element.Input as Input
 import Round
 import Temperature exposing (..)
 
 
 -- Main
+
+
+pinky =
+    rgb255 234 213 255
+
+
+shineBlue =
+    rgb255 169 214 255
+
+
+offWhite =
+    rgb255 234 213 255
+
+
+offBlack =
+    rgb255 15 15 15
+
+
+baseStyles =
+    [ Background.color offBlack
+    , Font.color offWhite
+    , Font.size 16
+    , Font.family [ Font.typeface "Share Tech Mono", Font.monospace ]
+    ]
+
+
+newView model =
+    Element.layout baseStyles
+        (mainLayout model)
+
+
+temperatureButton : Model -> Element Msg
+temperatureButton model =
+    el []
+        (model.currentValue
+            |> scaleOf
+            |> scaleName
+            |> text
+        )
+
+
+scaleSelectors model =
+    row [ width fill, spacing 30 ]
+        [ temperatureButton model ]
+
+
+mainLayout model =
+    column
+        [ Background.color offBlack
+        , Font.color pinky
+        , Element.padding 10
+        ]
+        [ scaleSelectors model
+        , inputSection model
+        , outputsSection model
+        ]
+
+
+
+--inputSection : Model -> Element
+
+
+inputSection model =
+    row []
+        [ Input.text [ Border.color (rgb255 160 214 255), Font.color offBlack ]
+            { label = Input.labelAbove [] (text "")
+            , text = model.rawInput
+            , placeholder = Nothing
+            , onChange = SetInputValue
+            }
+        ]
+
+
+
+--    input [ type_ "number", class "temp_input", onInput SetInputValue, value model.rawInput
+--
+
+
+outputsSection model =
+    row [ Border.color offWhite, Element.padding 10 ] [ conversionTable model ]
+
+
+conversionTable model =
+    table []
+        { data = modelTemps model
+        , columns =
+            [ { header = Element.text "From"
+              , width = fill
+              , view =
+                    \conversion ->
+                        Element.text conversion.input
+              }
+            , { header = Element.text "To"
+              , width = fill
+              , view =
+                    \conversion ->
+                        Element.text conversion.output
+              }
+            ]
+        }
+
+
+type alias ConversionDisplay =
+    { input : String
+    , output : String
+    }
+
+
+modelTemps : Model -> List ConversionDisplay
+modelTemps model =
+    let
+        asC =
+            temperature model.numericInput Celsius
+
+        casF =
+            toFahrenheit asC
+
+        asF =
+            temperature model.numericInput Fahrenheit
+
+        fasC =
+            toCelsius asF
+    in
+    [ { input = printNice <| asC, output = printNice casF }
+    , { input = printNice <| asF, output = printNice fasC }
+    ]
+
 
 main =
     Browser.document
@@ -19,7 +148,10 @@ main =
         }
 
 
+
 -- Nothing for the moment
+
+
 type alias Flags =
     {}
 
@@ -40,10 +172,13 @@ update msg model =
         SetInputValue rawInputString ->
             let
                 parsedInput =
-                    Result.fromMaybe "Bad Input" (String.toFloat rawInputString)
+                    rawInputString
+                        |> String.toFloat
+                        |> Result.fromMaybe "Bad Input"
 
                 safeInput =
-                    Result.withDefault (degreesOf model.currentValue) parsedInput
+                    parsedInput
+                        |> Result.withDefault (degreesOf model.currentValue)
 
                 newValue =
                     temperature safeInput (scaleOf model.currentValue)
@@ -63,11 +198,13 @@ update msg model =
 
 -- Model
 
+
 type alias Model =
     { rawInput : String
     , numericInput : Float
     , currentValue : Temperature
     }
+
 
 initialModel : Model
 initialModel =
@@ -84,9 +221,11 @@ initialModel =
 
 -- Subscriptions
 
+
 noSubscriptions : Model -> Sub Msg
 noSubscriptions model =
     Sub.none
+
 
 
 -- View
@@ -95,121 +234,12 @@ noSubscriptions model =
 view : Model -> Document Msg
 view model =
     { title = "Metric.cool"
-    , body =
-        [ div []
-            [ header
-            , mainpanel model
-            ]
-        ]
+    , body = [ newView model ]
     }
 
 
-header =
-    div [ class "heading" ]
-        [ h1 [] [ text "Metric.cool" ]
-        ]
 
-
-mainpanel : Model -> Html Msg
-mainpanel model =
-    div []
-        [ temperatureInput model
-        , div [ class "scale_selector" ]
-            [ celsiusButton model
-            , fahrenheitButton model
-            ]
-        , temperatureOutputs model.currentValue
-        , matrixDisplay model
-        ]
-
-
-temperatureOutputs : Temperature -> Html Msg
-temperatureOutputs temperature =
-    let
-        inF =
-            toFahrenheit temperature
-
-        inC =
-            toCelsius temperature
-    in
-    div []
-        [ p [] [ text <| printFull <| inC ]
-        , p [] [ text <| printFull <| inF ]
-        ]
-
-
-fahrenheitButton : Model -> Html Msg
-fahrenheitButton model =
-    scaleButton Fahrenheit "degrees.fahrenheit" model.currentValue
-
-
-celsiusButton : Model -> Html Msg
-celsiusButton model =
-    scaleButton Celsius "degrees.celsius" model.currentValue
-
-
-scaleButton : Scale -> String -> Temperature -> Html Msg
-scaleButton scale label currentValue =
-    let
-        classes =
-            if scaleOf currentValue == scale then
-                "button active"
-            else
-                "button"
-    in
-    p [ class classes, onClick <| SetInputScale scale ] [ text label ]
-
-
-temperatureInput : Model -> Html Msg
-temperatureInput model =
-    input [ type_ "number", class "temp_input", onInput SetInputValue, value model.rawInput ] []
-
-
-valueDisplay : String -> String -> Html Msg
-valueDisplay name inputValue =
-    div []
-        [ p [] [ text name ]
-        , input [ type_ "number", onInput SetInputValue, value inputValue ] []
-        ]
-
-
-matrixDisplay : Model -> Html Msg
-matrixDisplay model =
-    let
-        asC =
-            temperature model.numericInput Celsius
-
-        casF =
-            toFahrenheit asC
-
-        asF =
-            temperature model.numericInput Fahrenheit
-
-        fasC =
-            toCelsius asF
-
-        thAttrs =
-            [ class "" ]
-    in
-    div []
-        [ table [ class "output_matrix" ]
-            [ thead [] []
-            , tbody []
-                [ tr []
-                    [ th thAttrs [ text <| printNice asC ]
-                    , td [] [ text <| printNice casF ]
-                    ]
-                , tr []
-                    [ th thAttrs [ text <| printNice asF ]
-                    , td [] [ text <| printNice fasC ]
-                    ]
-                ]
-            ]
-        ]
-
-
-
---- Util
+----- Util
 
 
 printNice : Temperature -> String
@@ -224,13 +254,16 @@ printNice ( degrees, scale ) =
     symbol ++ " " ++ roundedDegrees
 
 
-printFull : Temperature -> String
-printFull ( degrees, scale ) =
-    let
-        name =
-            scaleName scale
 
-        roundedDegrees =
-            Round.round 2 degrees
-    in
-    name ++ " " ++ roundedDegrees
+--
+--
+--printFull : Temperature -> String
+--printFull ( degrees, scale ) =
+--    let
+--        name =
+--            scaleName scale
+--
+--        roundedDegrees =
+--            Round.round 2 degrees
+--    in
+--    name ++ " " ++ roundedDegrees
