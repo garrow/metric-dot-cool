@@ -1,6 +1,6 @@
 module Main exposing (Model, Msg(..), celsiusButton, fahrenheitButton, header, initialModel, main, mainpanel, matrixDisplay, printFull, printNice, scaleButton, temperatureInput, temperatureOutputs, update, valueDisplay, view)
 
-import Browser
+import Browser exposing (Document, document)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -8,16 +8,25 @@ import Round
 import Temperature exposing (..)
 
 
-
 -- Main
 
-
 main =
-    Browser.sandbox
-        { init = initialModel
+    Browser.document
+        { init = init
         , view = view
         , update = update
+        , subscriptions = noSubscriptions
         }
+
+
+-- Nothing for the moment
+type alias Flags =
+    {}
+
+
+init : Flags -> ( Model, Cmd Msg )
+init flags_ =
+    ( initialModel, Cmd.none )
 
 
 type Msg
@@ -25,12 +34,13 @@ type Msg
     | SetInputScale Scale
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SetInputValue rawInputString ->
             let
-                parsedInput = Result.fromMaybe ("Bad Input") (String.toFloat rawInputString)
+                parsedInput =
+                    Result.fromMaybe "Bad Input" (String.toFloat rawInputString)
 
                 safeInput =
                     Result.withDefault (degreesOf model.currentValue) parsedInput
@@ -38,26 +48,26 @@ update msg model =
                 newValue =
                     temperature safeInput (scaleOf model.currentValue)
             in
-            { model | currentValue = newValue, rawInput = rawInputString, numericInput = safeInput }
+            ( { model | currentValue = newValue, rawInput = rawInputString, numericInput = safeInput }
+            , Cmd.none
+            )
 
         SetInputScale scale ->
             let
                 newValue =
                     ( degreesOf model.currentValue, scale )
             in
-            { model | currentValue = newValue }
+            ( { model | currentValue = newValue }, Cmd.none )
 
 
 
--- Update
-
+-- Model
 
 type alias Model =
     { rawInput : String
     , numericInput : Float
     , currentValue : Temperature
     }
-
 
 initialModel : Model
 initialModel =
@@ -72,15 +82,26 @@ initialModel =
 
 
 
+-- Subscriptions
+
+noSubscriptions : Model -> Sub Msg
+noSubscriptions model =
+    Sub.none
+
+
 -- View
 
 
-view : Model -> Html Msg
+view : Model -> Document Msg
 view model =
-    div []
-        [ header
-        , mainpanel model
+    { title = "Metric.cool"
+    , body =
+        [ div []
+            [ header
+            , mainpanel model
+            ]
         ]
+    }
 
 
 header =
@@ -133,7 +154,6 @@ scaleButton scale label currentValue =
         classes =
             if scaleOf currentValue == scale then
                 "button active"
-
             else
                 "button"
     in
