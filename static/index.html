@@ -7,112 +7,12 @@
     <link rel="manifest" href="/manifest.json">
     <link href="https://fonts.googleapis.com/css?family=Audiowide|Share+Tech+Mono" rel="stylesheet">
 </head>
-<style type="text/css">
-
-
-    /*font-family: 'Audiowide', cursive;*/
-    /*font-family: 'Share Tech Mono', monospace;*/
-    body {
-        font-family: 'Share Tech Mono', monospace;
-        background-color: rgba(15, 15, 15, 1.0);
-        color: #f1f1f1;
-
-    }
-
-    body * {
-        box-sizing: border-box;
-        font-size: 16px;
-    }
-
-    .heading {
-        /*text-align: center;*/
-        /*transform: rotate(-9deg);*/
-        /*margin-bottom: 4rem;*/
-    }
-
-    h1 {
-        font-family: 'Audiowide', cursive;
-    }
-
-    h1 {
-        letter-spacing: 1px;
-        /*font-style: italic;*/
-        /*font-family: 'Impact', sans-serif;*/
-        /*text-transform: uppercase;*/
-    }
-
-    h1, p {
-        color: transparent;
-        background: rgb(234, 213, 255);
-        background: -moz-linear-gradient(180deg, rgba(234, 213, 255, 1) 0%, rgba(160, 214, 255, 1) 70%, rgba(57, 113, 239, 1) 100%);
-        background: -webkit-linear-gradient(180deg, rgba(234, 213, 255, 1) 0%, rgba(160, 214, 255, 1) 70%, rgba(57, 113, 239, 1) 100%);
-        background: linear-gradient(180deg, rgba(234, 213, 255, 1) 0%, rgba(160, 214, 255, 1) 70%, rgba(57, 113, 239, 1) 100%);
-        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ead5ff", endColorstr="#3971ef", GradientType=1);
-        -webkit-background-clip: text;
-        background-clip: text;
-    }
-
-    h1:after {
-        background: none;
-        content: attr(data-text);
-        left: 0;
-        position: absolute;
-        text-shadow: 0px 0px 5px pink;
-        top: 0;
-        z-index: -1;
-    }
-
-    input[type="text"], input[type="number"] {
-        font-size: 16px;
-    }
-
-    .temp_input {
-        background-color: rgba(15, 15, 15, 1.0);
-        color: #f1f1f1;
-        border: 1px solid rgba(160, 214, 255, 1);
-        padding: 0.5rem;
-        font-family: 'Share Tech Mono', monospace;
-        width: 100%;
-    }
-
-    .button {
-        padding: 0.5rem;
-        display: inline-block;
-        width: auto;
-        border: 1px solid hotpink;
-    }
-
-    .button.active {
-        color: hotpink;
-    }
-
-    .scale_selector {
-        display: flex;
-        justify-content: space-between;
-        justify-items: stretch;
-    }
-
-    #metric-cool-app {
-        text-transform: uppercase;
-        font-family: 'Share Tech Mono', monospace;
-        border: 1px solid rgba(160, 214, 255, 1);
-        padding: 0.5rem;
-        max-width: 900px;
-    }
-
-    table.output_matrix th {
-        font-weight: normal;
-        text-align: right;
-        border: 1px solid white;
-        padding: 2px;
-    }
-</style>
 <body>
 <div id="metric-cool-app"></div>
 
 <script src="index.js"></script>
 <script>
-  if ('serviceWorker' in navigator) {
+  if (false && 'serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js', {scope: '/'})
       .then(function (registration) {
         // console.log('Service Worker Registered');
